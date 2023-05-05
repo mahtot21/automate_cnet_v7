@@ -54,12 +54,12 @@ if __name__ == '__main__':
 
     # create_iservice(model_path, create_iservice_root_path)
 
-    create_iservice_implementation(model_path, create_iservice_implementation_root)
+    # create_iservice_implementation(model_path, create_iservice_implementation_root)
 
     # create_iservice_manager(model_path, iservice_manager_create_path)
 
     # create_service_manager(model_path, service_manager_create_path)
     
-    # create_controllers(model_path, controller_root)
+    create_controllers(model_path, controller_root)
     
     # configure_mapping(model_path, mapping_file_path)
