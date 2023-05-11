@@ -211,7 +211,6 @@ namespace CNET_V7_Repository.Implementation
         repository_manager.write(final_design)
     print(f"Repository manager created")
 
-
 def create_iservice_manager(model_path_dir: str, iservice_manager_file_path: str):
     iservice_manager_init = '''
 THE_USING_STATEMENT
@@ -243,7 +242,7 @@ THE_DECLARATION
                 the_declaration += f'\t\tI{model_name}Service {model_name[0].lower() + model_name[1:]}Service ' + '{ get; }\n'
         iservice_manager.write(
             iservice_manager_init.replace('THE_USING_STATEMENT', the_using_statement).replace('THE_DECLARATION',
-                                                                                              the_declaration))
+                                                                                            the_declaration))
     print("IServiceManager.cs file created.")
 
 
@@ -263,12 +262,11 @@ namespace CNET_V7_Service.Contracts.SCHEMASchema
     {
 
     }
-}
-
-        '''
+}'''
 
     for root, dirs, files in os.walk(model_path_dir):
         filenames = [os.path.splitext(file)[0] for file in files]
+        name = 'mahtot'
         # print(filenames)
         for name in filenames:
             schema = find_schema(name)
@@ -340,7 +338,6 @@ namespace CNET_V7_Service.Implementation
             'THE_LAZY_INSTANTIATION', the_lazy_instantiation)
         repository_manager.write(final_design)
     print(f"Service manager created")
-
 
 def create_iservice_implementation(model_path_dir: str, iservice_implementation_root: str):
     implementation_sample = '''
@@ -483,10 +480,9 @@ namespace CNET_V7_Service.Implementation.SCHEMA_NAMESchema
 
 
 def create_controllers(model_path_dir: str, controller_root: str):
-    implementation_sample = '''using CNET_V7_Domain.DataModels.AccountingSchema;
+    implementation_sample = '''using CNET_V7_Domain.DataModels.SCHEMASchema;
 using CNET_V7_Entities.DataModels;
 using CNET_V7_Service.Contracts;
-using CNET_V7_Service.Contracts.AccountingSchema;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -494,23 +490,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CNET_V7_Presentation.BaseControllers.AccountingSchema
+namespace CNET_V7_Presentation.BaseControllers.SCHEMASchema
 {
-
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class MODEL_NAMEController : ControllerBase
     {
+        private readonly IService<SAFE_MODEL_NAME, MODEL_NAMEDTO> _commonService;
 
-        private readonly IService<Account, AccountDTO> _commonService;
-
-        public AccountController(IService<Account, AccountDTO> commonService)
+        public MODEL_NAMEController(IService<SAFE_MODEL_NAME, MODEL_NAMEDTO> commonService)
         {
             _commonService = commonService;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAccountById(int id)
+        public async Task<IActionResult> GetMODEL_NAMEById(int id)
         {
             var response = await _commonService.FindById(id);
             if (response.Success) return Ok(response.Data);
@@ -518,7 +512,7 @@ namespace CNET_V7_Presentation.BaseControllers.AccountingSchema
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAccounts()
+        public async Task<IActionResult> GetAllMODEL_NAMEs()
         {
             var response = await _commonService.FindAll(trackChanges: false);
             if(response.Success)
@@ -527,35 +521,33 @@ namespace CNET_V7_Presentation.BaseControllers.AccountingSchema
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAccount([FromBody] AccountDTO account)
+        public async Task<IActionResult> CreateMODEL_NAME([FromBody] MODEL_NAMEDTO PARAMETER)
         {
-            if (account is null)
-                return BadRequest("account is null");
-
-            var response = await _commonService.Create(account);
+            if (PARAMETER is null)
+                return BadRequest("MODEL_NAME_CAMILE is null");
+            var response = await _commonService.Create(PARAMETER);
             if (response.Success)
                 return Ok(response.Data);
             return BadRequest(response.Ex.ToString());
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateAccount([FromBody] AccountDTO account)
+        public async Task<IActionResult> UpdateMODEL_NAME([FromBody] MODEL_NAMEDTO PARAMETER)
         {
-            if (account is null) return BadRequest("account is null");
-            var response = await _commonService.Update(account);
+            if (PARAMETER is null) return BadRequest("MODEL_NAME_CAMILE is null");
+            var response = await _commonService.Update(PARAMETER);
             if(response.Success) return Ok(response.Data);
             return BadRequest(response.Ex.ToString());
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccount(int id)
+        public async Task<IActionResult> DeleteMODEL_NAME(int id)
         {
             var response = await _commonService.Delete(id);
             if (response.Success)
                 return NoContent();
             return BadRequest(response.Ex.ToString());
         }
-
     }
 }'''
 
@@ -576,11 +568,13 @@ namespace CNET_V7_Presentation.BaseControllers.AccountingSchema
                     parameter = 'delegateObj'
                 elif model_name.lower() == 'range':
                     parameter = 'rangeObj'
-                file.write(implementation_sample.replace(
-                    'MODEL_NAME_CAMILE', model_name[0].lower() + model_name[1:]).replace('MODEL_NAME',
-                                                                                            model_name).replace('SCHEMA',
-                                                                                                                schema).replace(
-                    'PARAMETER', parameter))
+                file.write(
+                    implementation_sample.replace('MODEL_NAME_CAMILE', model_name[0].lower() + model_name[1:])
+                                            .replace('SAFE_MODEL_NAME', safe_model_name(model_name))
+                                            .replace('MODEL_NAME', (model_name))
+                                            .replace('SCHEMA', schema)
+                                            .replace( 'PARAMETER', parameter))
+
     print(" All Controller Implementation Files Are Created")
 
 
@@ -606,9 +600,9 @@ THE_CONFIGURATION
     the_configuration = ''
     using_printed_schemas = []
     with open(mapping_file_path, 'w+') as mapping_file:
-        for root, dirs, files in os.walk(model_path_dir):
+        for _, _, files in os.walk(model_path_dir):
             for file in files:
-                model_name, file_extension = os.path.splitext(file)
+                model_name, _ = os.path.splitext(file)
                 if find_schema(model_name) not in using_printed_schemas:
                     using_printed_schemas.append(find_schema(model_name))
                     the_using_statement += f'using CNET_V7_Domain.DataModels.{find_schema(model_name)}Schema;\n'
